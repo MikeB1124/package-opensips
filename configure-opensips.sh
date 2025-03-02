@@ -1,4 +1,4 @@
-#!/usr/bin/expect -f
+#!/bin/bash
 
 set -e  # Exit on error
 
@@ -15,6 +15,17 @@ apt install -y \
 # Start MariaDB
 systemctl start mariadb
 
+# Install OpenSIPS CLI
+curl -fsSL https://apt.opensips.org/opensips-org.gpg -o /usr/share/keyrings/opensips-org.gpg
+echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bookworm cli-nightly" >/etc/apt/sources.list.d/opensips-cli.list
+apt update -y
+apt install -y opensips-cli
+
+/bin/bash /home/admin/package-opensips/create-opensips-db.sh
+
+cp /home/admin/package-opensips/rsyslog.conf /etc/rsyslog.conf
+systemctl restart rsyslog
+
 # Clone OpenSIPS repo
 OPENSiPS_DIR="/tmp/opensips"
 if [ -d "$OPENSiPS_DIR" ]; then rm -rf "$OPENSiPS_DIR"; fi
@@ -30,23 +41,7 @@ make modules=modules/sipcapture install
 make modules=modules/freeswitch install
 make modules=modules/freeswitch_scripting install
 
-# Install OpenSIPS CLI
-curl -fsSL https://apt.opensips.org/opensips-org.gpg -o /usr/share/keyrings/opensips-org.gpg
-echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bookworm cli-nightly" >/etc/apt/sources.list.d/opensips-cli.list
-apt update -y
-apt install -y opensips-cli
-
-# Create OpenSIPS database and enter password
-set timeout 10
-spawn opensips-cli -x database create
-expect "Password for admin MySQL user (root):"
-send "root\r"
-expect eof
-
 cp /home/admin/package-opensips/opensips.cfg /usr/local/etc/opensips/opensips.cfg
-
-cp /home/admin/package-opensips/rsyslog.conf /etc/rsyslog.conf
-systemctl restart rsyslog
 
 cp /home/admin/package-opensips/opensips.service /etc/systemd/system/opensips.service
 systemctl enable opensips
