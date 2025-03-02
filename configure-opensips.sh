@@ -36,11 +36,16 @@ echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.
 apt update -y
 apt install -y opensips-cli
 
-# Create OpenSIPS database
+# Create OpenSIPS database and enter password 
 opensips-cli -x database create
 
-cp opensips.cfg /usr/local/etc/opensips/opensips.cfg
-cp rsyslog.conf /etc/ryslog.conf
+cp /home/admin/package/opensips/opensips.cfg /usr/local/etc/opensips/opensips.cfg
+
+cp /home/admin/package/opensips/rsyslog.conf /etc/ryslog.conf
 systemctl restart rsyslog
+
+cp /home/admin/package/opensips/opensips.service /etc/systemd/system/opensips.service
+systemctl enable opensips
+systemctl start opensips
 
 echo "OpenSIPS installation completed successfully."
