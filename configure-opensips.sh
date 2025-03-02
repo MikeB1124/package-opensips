@@ -45,7 +45,7 @@ cp /home/admin/package/opensips/rsyslog.conf /etc/ryslog.conf
 systemctl restart rsyslog
 
 cp /home/admin/package/opensips/opensips.service /etc/systemd/system/opensips.service
-systemctl enable opensips
-systemctl start opensips
+# systemctl enable opensips
+# systemctl start opensips
 
 echo "OpenSIPS installation completed successfully."
