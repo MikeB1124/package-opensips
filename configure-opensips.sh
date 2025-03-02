@@ -9,7 +9,8 @@ apt install -y \
     libsctp-dev libmariadb-dev libmariadb-dev-compat libpq-dev unixodbc-dev \
     libexpat1-dev libxml2-dev libxmlrpc-core-c3-dev libperl-dev libsnmp-dev \
     libldap2-dev libconfuse-dev libncurses5-dev libncursesw5-dev libevent-dev \
-    libpcre2-dev libpcre3-dev m4 gawk sed tar gzip mariadb-server
+    libpcre2-dev libpcre3-dev m4 gawk sed tar gzip mariadb-server sngrep net-tools \
+    rsyslog
 
 # Start MariaDB
 systemctl start mariadb
@@ -38,6 +39,8 @@ apt install -y opensips-cli
 # Create OpenSIPS database
 opensips-cli -x database create
 
-cp ./opensips.cfg /usr/local/etc/opensips/opensips.cfg
+cp opensips.cfg /usr/local/etc/opensips/opensips.cfg
+cp rsyslog.conf /etc/ryslog.conf
+systemctl restart rsyslog
 
 echo "OpenSIPS installation completed successfully."
