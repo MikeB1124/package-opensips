@@ -38,4 +38,6 @@ apt install -y opensips-cli
 # Create OpenSIPS database
 opensips-cli -x database create
 
+cp ./opensips.cfg /usr/local/etc/opensips/opensips.cfg
+
 echo "OpenSIPS installation completed successfully."
