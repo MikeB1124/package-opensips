@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/expect -f
 
 set -e  # Exit on error
 
@@ -10,7 +10,7 @@ apt install -y \
     libexpat1-dev libxml2-dev libxmlrpc-core-c3-dev libperl-dev libsnmp-dev \
     libldap2-dev libconfuse-dev libncurses5-dev libncursesw5-dev libevent-dev \
     libpcre2-dev libpcre3-dev m4 gawk sed tar gzip mariadb-server sngrep net-tools \
-    rsyslog
+    rsyslog expect
 
 # Start MariaDB
 systemctl start mariadb
@@ -36,16 +36,20 @@ echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.
 apt update -y
 apt install -y opensips-cli
 
-# Create OpenSIPS database and enter password 
-opensips-cli -x database create
+# Create OpenSIPS database and enter password
+set timeout 10
+spawn opensips-cli -x database create
+expect "Password for admin MySQL user (root):"
+send "root\r"
+expect eof
 
-cp /home/admin/package/opensips/opensips.cfg /usr/local/etc/opensips/opensips.cfg
+cp /home/admin/package-opensips/opensips.cfg /usr/local/etc/opensips/opensips.cfg
 
-cp /home/admin/package/opensips/rsyslog.conf /etc/ryslog.conf
+cp /home/admin/package-opensips/rsyslog.conf /etc/rsyslog.conf
 systemctl restart rsyslog
 
-cp /home/admin/package/opensips/opensips.service /etc/systemd/system/opensips.service
-# systemctl enable opensips
-# systemctl start opensips
+cp /home/admin/package-opensips/opensips.service /etc/systemd/system/opensips.service
+systemctl enable opensips
+systemctl start opensips
 
 echo "OpenSIPS installation completed successfully."
