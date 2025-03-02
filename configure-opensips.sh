@@ -15,14 +15,6 @@ apt install -y \
 # Start MariaDB
 systemctl start mariadb
 
-# Install OpenSIPS CLI
-curl -fsSL https://apt.opensips.org/opensips-org.gpg -o /usr/share/keyrings/opensips-org.gpg
-echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bookworm cli-nightly" >/etc/apt/sources.list.d/opensips-cli.list
-apt update -y
-apt install -y opensips-cli
-
-/bin/bash /home/admin/package-opensips/create-opensips-db.sh
-
 cp /home/admin/package-opensips/rsyslog.conf /etc/rsyslog.conf
 systemctl restart rsyslog
 
@@ -40,6 +32,14 @@ make modules=modules/db_mysql install
 make modules=modules/sipcapture install
 make modules=modules/freeswitch install
 make modules=modules/freeswitch_scripting install
+
+# Install OpenSIPS CLI
+curl -fsSL https://apt.opensips.org/opensips-org.gpg -o /usr/share/keyrings/opensips-org.gpg
+echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bookworm cli-nightly" >/etc/apt/sources.list.d/opensips-cli.list
+apt update -y
+apt install -y opensips-cli
+
+/bin/expect /home/admin/package-opensips/create-opensips-db.sh
 
 cp /home/admin/package-opensips/opensips.cfg /usr/local/etc/opensips/opensips.cfg
 
